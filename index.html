@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>James Arwin Banaag — IT Student</title>
+<title>James Banaag DigiPortfolio</title>
 <meta name="description" content="Portfolio of James Arwin Banaag, BS Information Technology student.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -135,6 +135,24 @@ body.mo .big .m span{transform:none;transition-delay:calc(.28s + var(--i)*.06s)}
 .k2{background:none;border:1.5px solid #1b1230;border-radius:99px;padding:8px 16px;color:#1b1230;font-weight:600}
 .k2:hover{background:#1b1230;color:var(--lilac)}
 :focus-visible.k2,.ov :focus-visible{outline-color:#1b1230}
+
+/* full-screen menu with normal-size text */
+body.mo{overflow:hidden}
+body.mo .brand{color:#1b1230}
+body.mo .burger{background:#1b1230;color:#F6F1FF;border-color:#1b1230}
+.ov{inset:0;width:auto;max-height:none;border-radius:0;box-shadow:none;padding:96px var(--pad) 32px;justify-content:center;
+clip-path:circle(0 at var(--cx,95%) var(--cy,34px));transition:clip-path .8s cubic-bezier(.7,0,.2,1),visibility 0s .8s}
+body.mo .ov{clip-path:circle(160vmax at var(--cx,95%) var(--cy,34px));transition-delay:0s}
+.big,.ovf{width:min(560px,100%);margin-inline:auto}
+.big a{width:100%;font:600 clamp(1.25rem,2.6vw,1.6rem)/1.3 var(--display);letter-spacing:-.01em;padding:15px 4px;border-bottom:1px solid rgba(27,18,48,.18)}
+.big a::after{content:attr(data-d);margin-left:auto;padding-left:16px;font:400 .88rem var(--body);opacity:.7;text-align:right}
+@media(max-width:520px){.big a::after{display:none}}
+.big a:hover,.big a:focus-visible{transform:translateX(8px)}
+.big .m span{transition-duration:.6s}
+body.mo .big .m span{transition-delay:calc(.2s + var(--i)*.05s)}
+#hint{display:none}
+.ovf{margin-top:28px;padding:0;border:0;font-size:.95rem}
+.ovf .r{width:100%;justify-content:space-between}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -323,10 +341,12 @@ dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
     else b.focus({preventScroll:true});
   }
   b.onclick=()=>setOpen(!open);
+  addEventListener("pointerdown",e=>{if(open&&!ov.contains(e.target)&&!b.contains(e.target))setOpen(false)});
   addEventListener("keydown",e=>{if(!open)return;
     if(e.key==="Escape")setOpen(false);
     if(e.key==="Tab"){const f=focusables(),i=f.indexOf(document.activeElement);
-      if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
+      if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}
+  });
   links.forEach(a=>{a.addEventListener("click",()=>setOpen(false));
     ["pointerenter","focus"].forEach(ev=>a.addEventListener(ev,()=>hint.textContent=a.dataset.d))});
   $(".big").addEventListener("pointerleave",()=>hint.textContent=here.dataset.d);
