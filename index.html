@@ -19,14 +19,8 @@ a{color:inherit}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 button{font:inherit;color:inherit;cursor:pointer}
 
-nav{position:fixed;inset:0 0 auto;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:16px var(--pad);
-background:linear-gradient(var(--bg),transparent);font-size:.95rem}
-nav b{font:800 1rem var(--display)}
-.links{display:flex;gap:22px;align-items:center}
-.links a{text-decoration:none;color:var(--muted)}.links a:hover{color:var(--ink)}
 .k{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 11px;font-size:.85rem;color:var(--muted)}
 .k:hover{border-color:var(--lilac);color:var(--ink)}
-@media(max-width:700px){.links a{display:none}}
 
 #hero{position:relative;height:100svh;min-height:520px;overflow:hidden}
 #c{position:absolute;inset:0;cursor:crosshair}
@@ -103,19 +97,64 @@ dialog::backdrop{background:#0a0714cc;backdrop-filter:blur(4px)}
 #toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);background:var(--sun);color:#1b1230;padding:10px 20px;border-radius:99px;
 font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:60}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+
+
+/* full-screen takeover navigation */
+.topbar{position:fixed;inset:0 0 auto;z-index:60;display:flex;justify-content:space-between;align-items:center;padding:16px var(--pad);pointer-events:none}
+.topbar>*{pointer-events:auto}
+.brand{font:800 1.15rem var(--display);text-decoration:none;letter-spacing:-.01em;transition:color .4s}
+.burger{display:flex;align-items:center;gap:12px;background:rgba(29,24,48,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);
+border-radius:99px;padding:10px 18px 10px 20px;font-weight:600;color:var(--ink);transition:background .4s,color .4s,border-color .4s}
+.burger:hover{border-color:var(--lilac)}
+.ic{position:relative;width:20px;height:12px}
+.ic i{position:absolute;left:0;width:100%;height:2px;border-radius:2px;background:currentColor;transition:transform .5s cubic-bezier(.7,0,.2,1)}
+.ic i:first-child{top:0}.ic i:last-child{bottom:0}
+body.mo .ic i:first-child{transform:translateY(5px) rotate(45deg)}
+body.mo .ic i:last-child{transform:translateY(-5px) rotate(-45deg)}
+body.mo .burger{background:#1b1230;color:#F6F1FF;border-color:#1b1230}
+body.mo .brand{color:#1b1230}
+body.mo{overflow:hidden}
+.prog{position:fixed;top:0;left:0;height:3px;width:100%;background:var(--sun);transform-origin:0 50%;transform:scaleX(0);z-index:70}
+.ov{position:fixed;inset:0;z-index:50;background:var(--lilac);color:#1b1230;display:flex;flex-direction:column;justify-content:center;padding:96px var(--pad) 32px;
+clip-path:circle(0 at var(--cx,95%) var(--cy,34px));visibility:hidden;transition:clip-path .8s cubic-bezier(.7,0,.2,1),visibility 0s .8s;overflow:auto}
+body.mo .ov{clip-path:circle(160vmax at var(--cx,95%) var(--cy,34px));visibility:visible;transition-delay:0s}
+.big{display:flex;flex-direction:column;gap:2px}
+.big a{display:flex;align-items:center;width:fit-content;max-width:100%;text-decoration:none;font:800 clamp(2.4rem,9vw,7rem)/1.04 var(--display);letter-spacing:-.03em;
+transition:opacity .3s,transform .4s cubic-bezier(.2,.8,.2,1)}
+.big a::before{content:"";flex:none;width:.26em;height:.26em;border-radius:50%;background:#1b1230;margin-right:0;transform:scale(0);transition:transform .35s,margin .35s}
+.big a[aria-current="true"]::before{transform:scale(1);margin-right:.22em}
+.big a:hover,.big a:focus-visible{transform:translateX(clamp(8px,2vw,28px))}
+.big:hover a:not(:hover),.big:has(a:focus-visible) a:not(:focus-visible){opacity:.25}
+.big .m{display:block;overflow:hidden;padding-bottom:.06em}
+.big .m span{display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+body.mo .big .m span{transform:none;transition-delay:calc(.28s + var(--i)*.06s)}
+.ovf{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:clamp(20px,4vh,44px);font-weight:500}
+#hint{min-height:1.6em}
+.ovf .r{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.ovf a{color:inherit}
+.k2{background:none;border:1.5px solid #1b1230;border-radius:99px;padding:8px 16px;color:#1b1230;font-weight:600}
+.k2:hover{background:#1b1230;color:var(--lilac)}
+:focus-visible.k2,.ov :focus-visible{outline-color:#1b1230}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<nav>
-  <b>JAB</b>
-  <div class="links"><a href="#about">About</a><a href="#skills">Skills</a><a href="#edu">Education</a><a href="#train">Training</a><a href="#contact">Contact</a>
-  <button class="k" id="open" aria-label="Open command menu">Ctrl K</button></div>
-</nav>
+<div class="prog" id="prog" aria-hidden="true"></div>
+<div class="topbar">
+  <a class="brand" href="#hero" aria-label="Back to top">JAB</a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="ov"><span id="blabel">Menu</span><span class="ic" aria-hidden="true"><i></i><i></i></span></button>
+</div>
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Site menu" aria-hidden="true" inert>
+  <nav class="big" aria-label="Main"><a href="#hero" data-id="hero" data-d="Back to the top" style="--i:0"><span class="m"><span>Home</span></span></a><a href="#about" data-id="about" data-d="Who I am" style="--i:1"><span class="m"><span>About</span></span></a><a href="#skills" data-id="skills" data-d="The skills I work with" style="--i:2"><span class="m"><span>Toolkit</span></span></a><a href="#edu" data-id="edu" data-d="Where I have studied" style="--i:3"><span class="m"><span>Education</span></span></a><a href="#train" data-id="train" data-d="Courses and certificates" style="--i:4"><span class="m"><span>Training</span></span></a><a href="#contact" data-id="contact" data-d="Say hello" style="--i:5"><span class="m"><span>Contact</span></span></a></nav>
+  <div class="ovf">
+    <span id="hint">Where to?</span>
+    <span class="r"><a href="mailto:banaagjamesarwin05@gmail.com">banaagjamesarwin05@gmail.com</a><button class="k2" id="open" aria-label="Open command menu">Ctrl K</button></span>
+  </div>
+</div>
 
 <header id="hero">
-  <h1 class="sr">James Arwin Banaag</h1>
-  <canvas id="c" role="img" aria-label="Particles that spell James Arwin Banaag and move away from your cursor"></canvas>
+  <h1 class="sr">James Digi-Portfolio</h1>
+  <canvas id="c" role="img" aria-label="Particles that spell James Digi-Portfolio and move away from your cursor"></canvas>
   <div class="intro">
     <p><strong>IT student building for the web.</strong>I work in HTML, CSS, Java and PHP, and I'm finishing a web-based HR system as my capstone.</p>
     <span class="hint">Move through the letters. Click to scatter them.</span>
@@ -192,7 +231,7 @@ let P=[],W=0,H=0,dpr=1,mx=-999,my=-999,live=true,raf;
 function build(){
   dpr=Math.min(devicePixelRatio||1,2);W=hero.clientWidth;H=hero.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";
-  const lines=W<720?["JAMES","ARWIN","BANAAG"]:["JAMES ARWIN","BANAAG"],longest=Math.max(...lines.map(l=>l.length));
+  const lines=W<720?["JAMES","DIGI-","PORTFOLIO"]:["JAMES","DIGI-PORTFOLIO"],longest=Math.max(...lines.map(l=>l.length));
   let fs=Math.min(W*.9/(longest*.8),H*.5/lines.length/.95*1.4);
   const o=document.createElement("canvas");o.width=W;o.height=H;const oc=o.getContext("2d");
   oc.font=`800 ${fs}px Syne,sans-serif`;
@@ -271,6 +310,33 @@ pin.onkeydown=e=>{if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();
   else if(e.key==="Enter"&&shown[sel])shown[sel][1]()};
 pl.onclick=e=>{const li=e.target.closest("li[data-i]");if(li)shown[+li.dataset.i][1]()};
 dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+
+
+/* ---- takeover nav: circular reveal from the button, staggered links, dimming siblings, scroll progress bar ---- */
+(()=>{
+  const b=$("#burger"),ov=$("#ov"),bar=$("#prog"),hint=$("#hint"),lab=$("#blabel"),links=$$("#ov .big a");
+  let open=false,here=links[0];
+  const focusables=()=>[b,...$$("#ov a,#ov button")];
+  function setOpen(o){
+    open=o;document.body.classList.toggle("mo",o);b.setAttribute("aria-expanded",o);lab.textContent=o?"Close":"Menu";ov.inert=!o;ov.setAttribute("aria-hidden",!o);
+    if(o){const r=b.getBoundingClientRect();ov.style.setProperty("--cx",r.left+r.width/2+"px");ov.style.setProperty("--cy",r.top+r.height/2+"px");hint.textContent=here.dataset.d;setTimeout(()=>here.focus({preventScroll:true}),450)}
+    else b.focus({preventScroll:true});
+  }
+  b.onclick=()=>setOpen(!open);
+  addEventListener("keydown",e=>{if(!open)return;
+    if(e.key==="Escape")setOpen(false);
+    if(e.key==="Tab"){const f=focusables(),i=f.indexOf(document.activeElement);
+      if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
+  links.forEach(a=>{a.addEventListener("click",()=>setOpen(false));
+    ["pointerenter","focus"].forEach(ev=>a.addEventListener(ev,()=>hint.textContent=a.dataset.d))});
+  $(".big").addEventListener("pointerleave",()=>hint.textContent=here.dataset.d);
+  $("#open").addEventListener("click",()=>setOpen(false));
+  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){const a=links.find(l=>l.dataset.id===en.target.id);
+    if(a){here=a;links.forEach(l=>l.setAttribute("aria-current",l===a))}}}),{rootMargin:"-45% 0px -50% 0px"});
+  links.forEach(l=>{const t=document.getElementById(l.dataset.id);t&&io.observe(t)});
+  const prog=()=>{const m=document.documentElement.scrollHeight-innerHeight;bar.style.transform=`scaleX(${m>0?Math.min(1,scrollY/m):0})`};
+  addEventListener("scroll",prog,{passive:true});prog();links[0].setAttribute("aria-current","true");
+})();
 </script>
 </body>
 </html>
